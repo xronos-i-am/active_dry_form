@@ -73,7 +73,10 @@ module ActiveDryForm
       @params = {}
       if params
         param_key = self.class::NAMESPACE.param_key
-        self.attributes = params[param_key] || params[param_key.to_sym] || params
+        attributes = params[param_key] || params[param_key.to_sym]
+        raise ArgumentError, "key '#{param_key}' not found in params" if attributes.nil?
+
+        self.attributes = attributes
       end
 
       @record = record

@@ -41,7 +41,7 @@ RSpec.describe ActiveDryForm do
     it 'raises error' do
       expect {
         UserForm.new(record: user, params: { form: { name: 'Ivan' } })
-      }.to raise_error(NoMethodError, /undefined method `form='/)
+      }.to raise_error(ActiveModel::UnknownAttributeError, "unknown attribute 'first_name' for UserForm.")
     end
   end
 

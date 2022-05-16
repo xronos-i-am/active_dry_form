@@ -3,6 +3,8 @@
 module ActiveDryForm
   class BaseForm
 
+    include ActiveModel::AttributeAssignment
+
     attr_reader :params, :record, :errors
 
     def initialize(params, record, errors)
@@ -45,9 +47,11 @@ module ActiveDryForm
 
     def attributes=(hsh)
       hsh.each do |attr, v|
-        next if !ActiveDryForm.config.strict_param_keys && !respond_to?("#{attr}=")
-
-        public_send("#{attr}=", v)
+        if respond_to?("#{attr}=")
+          public_send("#{attr}=", v)
+        else
+          params[attr] = v
+        end
       end
     end
 

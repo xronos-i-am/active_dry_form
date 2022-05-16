@@ -16,16 +16,31 @@ RSpec.describe ActiveDryForm do
   end
 
   context 'when nested form is valid' do
-    let(:form) { NestedHasOneForm.new(record: user, params: { user: { personal_info: { age: '20' } } }) }
+    let(:user_params) do
+      {
+        user: {
+          personal_info: {
+            age: '20',
+            'date_of_birth(3i)': 31,
+            'date_of_birth(2i)': 1,
+            'date_of_birth(1i)': 2000,
+          }
+        }
+      }
+    end
+    let(:form) { NestedHasOneForm.new(record: user, params: user_params) }
 
     it 'creates nested model' do
       form.update
       expect(user.personal_info.age).to eq 20
+      expect(user.personal_info.date_of_birth).to eq Date.new(2000, 1, 31)
     end
 
     it 'updates nested model' do
-      user.create_personal_info!(age: 18)
-      expect { form.update }.to change { user.personal_info.age }.to(20)
+      user.create_personal_info!(age: 18, date_of_birth: Date.new(1990))
+      expect { form.update }
+        .to change { user.personal_info.age }.to(20)
+        .and change { user.personal_info.date_of_birth }.to(Date.new(2000, 1, 31))
     end
   end
 end
